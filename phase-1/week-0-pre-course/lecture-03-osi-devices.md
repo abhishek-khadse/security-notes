@@ -2,48 +2,142 @@
 Date: May 19, 2026
 Source: NetworkChuck Free CCNA
 
-## Devices by Layer
-| Device | Layer | Function |
-|--------|-------|----------|
-| Hub | 1 | Repeats bits to all ports |
-| Switch | 2 | Forwards frames using MAC addresses |
-| Router | 3 | Routes packets between networks |
-| Firewall | 3-7 | Filters traffic based on policy |
-| Proxy | 7 | Intermediary for client requests |
-| IDS/IPS | 3-7 | Detects or prevents suspicious traffic |
-| WAF | 7 | Protects web applications |
+## Big Idea
+Different network devices work at different OSI layers.
+To understand a device, ask one question:
 
-## Hub vs Switch vs Router
-| Feature | Hub | Switch | Router |
-|---------|-----|--------|--------|
-| OSI Layer | 1 | 2 | 3 |
-| Address Used | None | MAC address | IP address |
-| Traffic Behavior | Sends to all ports | Sends to target MAC | Sends between networks |
-| Security | Low | Better | Policy-dependent |
+**What information does this device use to make decisions?**
 
-## Offensive Angle
-| Device | Example Attack |
-|--------|----------------|
-| Hub | Passive sniffing because all traffic is repeated |
-| Switch | CAM table overflow, ARP spoofing |
-| Router | Default credentials, route poisoning |
-| Firewall | Rule bypass, allowed-port abuse |
-| Proxy | Credential interception, proxy misconfiguration |
+If it uses electrical signals, it is Layer 1.
+If it uses MAC addresses, it is Layer 2.
+If it uses IP addresses, it is Layer 3.
+If it filters applications or web requests, it may work at higher layers.
 
-## SOC Detection
-| Device | Detection Role |
-|--------|----------------|
-| Firewall | Blocks and logs suspicious traffic |
-| IDS/IPS | Detects signatures and anomalies |
-| Proxy | Logs web requests and destinations |
-| Router | Shows routing changes and traffic anomalies |
-| Switch | Shows port security, MAC changes, VLAN events |
+## Hub
+A hub is a Layer 1 device.
+It does not understand MAC addresses or IP addresses.
 
-## Interview Questions
-**Q: What is the difference between IDS and IPS?**
+Simple meaning:
+
+Whatever comes in one port is repeated out all other ports.
+
+Security problem:
+
+Anyone connected to a hub can see a lot of traffic.
+This is why hubs are almost never used in modern networks.
+
+## Switch
+A switch is mainly a Layer 2 device.
+It uses MAC addresses to forward frames.
+
+Simple meaning:
+
+A switch learns which MAC address is connected to which port.
+Then it sends traffic only where it needs to go.
+
+Security issues:
+
+- ARP spoofing
+- MAC flooding
+- VLAN hopping
+- Port security bypass
+
+## Router
+A router is a Layer 3 device.
+It uses IP addresses to move packets between networks.
+
+Simple meaning:
+
+Switches connect devices inside a network.
+Routers connect different networks together.
+
+Security issues:
+
+- Weak router passwords.
+- Exposed admin panels.
+- Route poisoning.
+- Misconfigured access control lists.
+
+## Firewall
+A firewall filters traffic based on rules.
+Depending on the firewall type, it can work from Layer 3 up to Layer 7.
+
+Examples:
+
+- Basic firewall: source IP, destination IP, port.
+- Next-generation firewall: application, user, content, threat signatures.
+
+Security role:
+
+- Block unwanted traffic.
+- Log suspicious connections.
+- Enforce network policy.
+
+## Proxy
+A proxy is usually a Layer 7 device.
+It sits between the client and destination service.
+
+Common uses:
+
+- Web filtering.
+- Logging.
+- Caching.
+- Access control.
+- Hiding internal client details.
+
+Security risk:
+
+If a proxy is misconfigured, attackers may use it to bypass restrictions or hide activity.
+
+## IDS and IPS
+IDS means Intrusion Detection System.
+It detects suspicious traffic and alerts.
+
+IPS means Intrusion Prevention System.
+It detects suspicious traffic and can block it.
+
+Easy memory:
+
+- IDS = sees and alerts.
+- IPS = sees and stops.
+
+## WAF
+WAF means Web Application Firewall.
+It protects web applications at Layer 7.
+
+It looks for attacks like:
+
+- SQL injection.
+- XSS.
+- Malicious HTTP requests.
+- Suspicious user input.
+
+## SOC Analyst View
+Device logs are very important.
+
+Useful logs:
+
+- Firewall logs show allowed and blocked traffic.
+- Proxy logs show websites and URLs.
+- IDS/IPS logs show attack signatures.
+- Router logs show route and traffic anomalies.
+- Switch logs show MAC changes, port security, and VLAN events.
+
+## Interview Ready Answers
+**What is the difference between a hub, switch, and router?**
+
+A hub repeats traffic to all ports.
+A switch forwards traffic using MAC addresses.
+A router forwards traffic between networks using IP addresses.
+
+**What is the difference between IDS and IPS?**
+
 IDS detects and alerts.
-IPS detects and can block automatically.
+IPS detects and blocks.
 
-**Q: What is a proxy server?**
-A proxy server is an intermediary between a client and another service.
-It can be used for caching, filtering, logging, access control, and anonymity.
+## Quick Revision
+- Hub = Layer 1 = repeats signals.
+- Switch = Layer 2 = MAC address.
+- Router = Layer 3 = IP address.
+- Proxy = Layer 7 = application requests.
+- WAF = Layer 7 = web app protection.

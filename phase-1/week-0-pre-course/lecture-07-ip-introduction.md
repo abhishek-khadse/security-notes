@@ -2,84 +2,175 @@
 Date: May 19, 2026
 Source: NetworkChuck Free CCNA
 
-## What is IP?
-Internet Protocol defines how devices are identified and how packets are routed across networks.
-IP works at OSI Layer 3, the Network layer.
+## Big Idea
+IP stands for Internet Protocol.
+It is used to identify devices and move packets between networks.
 
-## IPv4 vs IPv6
-| Feature | IPv4 | IPv6 |
-|---------|------|------|
-| Size | 32-bit | 128-bit |
-| Format | Decimal | Hexadecimal |
-| Example | 192.168.1.1 | 2001:db8::1 |
-| Address Space | About 4.3 billion | Extremely large |
-| Security | Supports IPsec | Supports IPsec, but encryption is not automatic |
+Simple meaning:
 
-## RFC1918 Private IP Ranges
-| Range | CIDR | Common Use |
-|-------|------|------------|
-| 10.0.0.0 | /8 | Large private networks |
-| 172.16.0.0 | /12 | Medium private networks |
-| 192.168.0.0 | /16 | Home and small office networks |
+IP is like the address system of networking.
+If data needs to travel from one network to another, IP helps decide where it should go.
 
-## Key Networking Terms
-| Term | Meaning |
-|------|---------|
-| IP Address | Logical Layer 3 device identifier |
-| MAC Address | Physical Layer 2 hardware address |
-| Subnet Mask | Separates network and host portions |
-| Default Gateway | Router used to reach other networks |
-| DNS | Converts names to IP addresses |
-| DHCP | Automatically assigns network settings |
+## IP Address
+An IP address is a logical address.
+It can change depending on the network.
 
-## Common Subnet Masks
-| Subnet Mask | CIDR | Usable Hosts |
-|-------------|------|--------------|
-| 255.0.0.0 | /8 | 16,777,214 |
-| 255.255.0.0 | /16 | 65,534 |
-| 255.255.255.0 | /24 | 254 |
+Example:
+
+```text
+192.168.1.10
+```
+
+This address tells the network where a device is located logically.
+
+## MAC Address vs IP Address
+MAC address is used inside the local network.
+IP address is used to route traffic between networks.
+
+Easy memory:
+
+- MAC = local delivery.
+- IP = network-to-network delivery.
+
+Example:
+
+If you send a package:
+
+- IP address is like the city and street address.
+- MAC address is like the exact person or door inside the local building.
+
+## IPv4
+IPv4 uses 32-bit addresses.
+
+Example:
+
+```text
+192.168.1.1
+```
+
+IPv4 has about 4.3 billion addresses.
+Because that is not enough for the whole world, private IP ranges and NAT are widely used.
+
+## IPv6
+IPv6 uses 128-bit addresses.
+
+Example:
+
+```text
+2001:db8::1
+```
+
+IPv6 has a very large address space.
+IPv6 supports IPsec, but encryption is not automatic just because IPv6 is used.
+
+## Private IP Ranges
+Private IPs are used inside internal networks.
+They are not directly routed on the public internet.
+
+Important ranges:
+
+- `10.0.0.0/8`
+- `172.16.0.0/12`
+- `192.168.0.0/16`
+
+Common home networks usually use:
+
+```text
+192.168.1.0/24
+```
+
+## Subnet Mask
+A subnet mask separates the network part from the host part of an IP address.
+
+Example:
+
+```text
+192.168.1.10/24
+```
+
+Here, `/24` means the first 24 bits are the network portion.
+
+In a `/24` network:
+
+- Network: `192.168.1.0`
+- Usable hosts: `192.168.1.1` to `192.168.1.254`
+- Broadcast: `192.168.1.255`
+
+## Default Gateway
+The default gateway is the router used to reach other networks.
+
+Simple meaning:
+
+If your computer does not know where to send traffic, it sends it to the default gateway.
+
+## DNS
+DNS converts names into IP addresses.
+
+Example:
+
+```text
+google.com -> IP address
+```
+
+Without DNS, users would need to remember IP addresses instead of names.
+
+## DHCP
+DHCP automatically gives network settings to devices.
+
+It can provide:
+
+- IP address.
+- Subnet mask.
+- Default gateway.
+- DNS server.
 
 ## Offensive Angle
-| Concept | Example Attack |
-|---------|----------------|
-| IP Address | IP spoofing, geolocation bypass |
-| DHCP | Rogue DHCP server attack |
-| DNS | DNS poisoning, DNS tunneling |
-| ARP | ARP spoofing -> MITM |
-| ICMP | Ping sweep, ping flood |
+Attackers use IP-related protocols for discovery and attacks.
 
-### Recon Commands
+Examples:
+
+- Ping sweep to find live hosts.
+- ARP spoofing for man-in-the-middle attacks.
+- Rogue DHCP server to give wrong gateway or DNS.
+- DNS poisoning to redirect users.
+- ICMP flood for denial of service.
+
+Useful commands:
+
 ```bash
-# Network discovery
 nmap -sn 192.168.1.0/24
-
-# DNS lookup
 nslookup target.com
 dig target.com
-
-# ARP table
 arp -a
-
-# Trace route
 traceroute target.com
 ```
 
 ## SOC Detection
-| Attack | Alert Idea |
-|--------|------------|
-| IP Spoofing | Impossible or invalid source IP |
-| DHCP Attack | Rogue DHCP server detected |
-| DNS Poisoning | DNS response mismatch |
-| ICMP Flood | High ICMP volume |
-| ARP Spoofing | Gratuitous ARP or MAC/IP mismatch |
+Watch for:
 
-## Interview Questions
-**Q: What is the difference between MAC and IP address?**
-MAC is a Layer 2 physical address used on the local network.
+- Rogue DHCP server.
+- High ICMP volume.
+- DNS response mismatch.
+- Same IP using different MAC addresses.
+- Suspicious DNS tunneling behavior.
+
+## Interview Ready Answers
+**What is the difference between MAC and IP address?**
+
+MAC is a Layer 2 physical address used for local delivery.
 IP is a Layer 3 logical address used for routing between networks.
 
-**Q: What is DHCP?**
-DHCP automatically assigns an IP address, subnet mask, default gateway, and DNS servers to devices.
+**What is DHCP?**
 
-**Q: What is a default gateway?**
-The default gateway is the router IP address used to forward traffic outside the local network.
+DHCP automatically assigns IP address, subnet mask, default gateway, and DNS server information to devices.
+
+**What is a default gateway?**
+
+The default gateway is the router that forwards traffic outside the local network.
+
+## Quick Revision
+- IP = logical address.
+- MAC = physical/local address.
+- DNS = name to IP.
+- DHCP = automatic IP settings.
+- Default gateway = router to other networks.

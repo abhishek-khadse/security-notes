@@ -2,50 +2,175 @@
 Date: May 19, 2026
 Source: NetworkChuck Free CCNA
 
-## Protocol Quick Reference
-| Protocol | Purpose | Port | Security Risk |
-|----------|---------|------|---------------|
-| ARP | IP -> MAC mapping | - | ARP spoofing |
-| ICMP | Diagnostics and ping | - | Recon, flood |
-| DHCP | Automatic IP assignment | 67/68 | Rogue DHCP |
-| DNS | Domain -> IP lookup | 53 | Poisoning, tunneling |
-| HTTP | Web traffic | 80 | Clear-text attacks |
-| HTTPS | Secure web traffic | 443 | TLS misconfig, encrypted C2 |
-| FTP | File transfer | 20/21 | Plain-text credentials |
-| SFTP | Secure file transfer over SSH | 22 | Brute force risk |
-| SSH | Secure remote access | 22 | Brute force |
-| Telnet | Remote access | 23 | No encryption |
-| SMTP | Send email | 25 | Spoofing, relay abuse |
-| POP3 | Receive email | 110 | Plain-text if not encrypted |
-| IMAP | Sync email | 143 | Plain-text if not encrypted |
-| SNMP | Network management | 161/162 | Information leakage |
-| LDAP | Directory service | 389 | AD enumeration |
-| SMB | File sharing | 445 | Ransomware, lateral movement |
-| RDP | Remote desktop | 3389 | Brute force |
-| NTP | Time sync | 123 | Amplification attacks |
+## Big Idea
+A protocol is a set of rules.
+Networking protocols define how devices communicate.
 
-## Most Important for Cybersecurity
+Instead of memorizing a big table, learn protocols by their job.
 
-### ARP - Why It Matters
+Ask:
+
+- Does it find addresses?
+- Does it give IP settings?
+- Does it move web traffic?
+- Does it transfer files?
+- Does it manage devices?
+- Does it support remote access?
+
+## Address and Discovery Protocols
+### ARP
+ARP maps an IP address to a MAC address inside a local network.
+
+Simple example:
+
+Your computer knows the gateway IP, but it needs the gateway MAC address.
+ARP asks, "Who has this IP?"
+The gateway replies with its MAC address.
+
+Security problem:
+
 ARP has no built-in authentication.
-An attacker can send a fake ARP reply saying, "I am the gateway."
-If the victim believes it, traffic can flow through the attacker, causing a man-in-the-middle situation.
+Attackers can send fake ARP replies and perform man-in-the-middle attacks.
 
-### DNS - Why It Matters
-DNS usually has no encryption by default.
-If DNS is poisoned, a victim may be redirected from a real domain to an attacker's IP address.
-DNS tunneling can also hide command-and-control or data exfiltration inside DNS queries.
+### ICMP
+ICMP is used for network diagnostics.
 
-### SMB - Why It Matters
-SMB runs on port 445 and is used for file sharing.
-It is a major target for ransomware and lateral movement.
-EternalBlue targeted SMB and helped spread WannaCry.
+Common example:
+
+```bash
+ping 8.8.8.8
+```
+
+Security problem:
+
+Attackers use ICMP for discovery and flooding.
+
+## IP Configuration Protocol
+### DHCP
+DHCP automatically gives IP settings to devices.
+
+It provides:
+
+- IP address.
+- Subnet mask.
+- Default gateway.
+- DNS server.
+
+Security problem:
+
+A rogue DHCP server can give victims a fake gateway or DNS server.
+
+## Name Resolution Protocol
+### DNS
+DNS converts domain names into IP addresses.
+
+Example:
+
+```text
+google.com -> IP address
+```
+
+Security problems:
+
+- DNS poisoning.
+- DNS tunneling.
+- Suspicious domain lookups.
+- Malware command-and-control.
+
+## Web Protocols
+### HTTP
+HTTP is normal web traffic on port 80.
+
+Problem:
+
+It is not encrypted.
+
+### HTTPS
+HTTPS is encrypted web traffic on port 443.
+
+Important:
+
+HTTPS protects data in transit, but attackers can still host malicious websites over HTTPS.
+
+## Remote Access Protocols
+### SSH
+SSH runs on port 22.
+It is used for secure remote login.
+
+Security issue:
+
+Brute force and stolen keys.
+
+### Telnet
+Telnet runs on port 23.
+It is old and insecure.
+
+Security issue:
+
+Everything is sent in clear text.
+
+### RDP
+RDP runs on port 3389.
+It is used for Windows remote desktop.
+
+Security issue:
+
+Common target for brute force and ransomware access.
+
+## File and Email Protocols
+### FTP
+FTP uses ports 20 and 21.
+It transfers files but can expose credentials in clear text.
+
+### SFTP
+SFTP uses SSH, usually port 22.
+It is safer than FTP.
+
+### SMTP
+SMTP sends email, commonly on port 25.
+It can be abused for spoofing or relay attacks.
+
+### POP3 and IMAP
+Both are used to receive email.
+
+Easy difference:
+
+- POP3 downloads mail.
+- IMAP syncs mail across devices.
+
+## Management and Directory Protocols
+### SNMP
+SNMP is used to manage network devices.
+
+Security issue:
+
+Default community strings like `public` can leak device information.
+
+### LDAP
+LDAP is used for directory services like Active Directory queries.
+
+Security issue:
+
+Can be abused for enumeration if exposed or misconfigured.
+
+### SMB
+SMB is used for Windows file sharing.
+
+Security issue:
+
+Major target for ransomware and lateral movement.
+
+### NTP
+NTP synchronizes time.
+
+Security issue:
+
+Can be abused in amplification attacks.
 
 ## Offensive Angle
-```bash
-# ARP spoofing
-arpspoof -i eth0 -t 192.168.1.5 192.168.1.1
+Example commands:
 
+```bash
 # DNS enumeration
 dig any target.com
 dnsenum target.com
@@ -53,29 +178,37 @@ dnsenum target.com
 # SMTP enumeration
 nmap -p 25 --script smtp-enum-users target.com
 
-# SNMP enumeration using default community string
+# SNMP enumeration
 snmpwalk -c public -v1 192.168.1.1
 ```
 
 ## SOC Detection
-| Protocol | Attack | Detection |
-|----------|--------|-----------|
-| ARP | Spoofing | Gratuitous ARP or MAC/IP mismatch |
-| DNS | Tunneling | High DNS query volume or long subdomains |
-| SMB | Lateral movement | Port 445 anomaly and unusual file access |
-| SNMP | Enumeration | Default community string usage |
-| RDP | Brute force | Failed login spike |
-| NTP | Amplification | NTP flood alert |
+Watch for:
 
-## Interview Questions
-**Q: What is the difference between POP3 and IMAP?**
-POP3 usually downloads emails to one device.
-IMAP syncs emails across multiple devices.
+- ARP spoofing alerts.
+- High DNS volume.
+- Long strange DNS subdomains.
+- SMB spikes.
+- RDP brute force.
+- SNMP using default community strings.
+- NTP flood behavior.
 
-**Q: Why is SSH better than Telnet?**
-SSH encrypts the session.
-Telnet sends everything in clear text.
+## Interview Ready Answers
+**What is DNS tunneling?**
 
-**Q: What is DNS tunneling?**
 DNS tunneling hides data inside DNS queries.
-Attackers can encode data into subdomain names to bypass some network controls and exfiltrate information.
+Attackers may encode data into subdomains to bypass security controls.
+
+**What is the difference between POP3 and IMAP?**
+
+POP3 downloads emails to a device.
+IMAP syncs emails across devices.
+
+## Quick Revision
+- ARP = IP to MAC.
+- DHCP = gives IP settings.
+- DNS = name to IP.
+- SSH = secure remote login.
+- Telnet = insecure remote login.
+- SMB = Windows file sharing.
+- SNMP = network device management.

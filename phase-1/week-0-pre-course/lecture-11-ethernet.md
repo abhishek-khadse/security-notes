@@ -2,81 +2,159 @@
 Date: May 19, 2026
 Source: NetworkChuck Free CCNA
 
-## Ethernet Naming Format
-Example: `100Base-T`
+## Big Idea
+Ethernet is the most common wired LAN technology.
+It defines how devices send data over cables inside local networks.
+
+When you plug a PC into a switch using an RJ45 cable, you are usually using Ethernet.
+
+## Ethernet Naming
+Ethernet names look confusing at first, but they are easy to break down.
+
+Example:
+
+```text
+100Base-T
+```
+
+Meaning:
 
 - `100` = speed in Mbps.
 - `Base` = baseband signaling.
 - `T` = twisted-pair copper cable.
 
-## Ethernet Standards
-| Standard | Speed | Cable | Max Distance |
-|----------|-------|-------|--------------|
-| 10Base-T | 10 Mbps | Cat3 | 100 m |
-| 100Base-TX | 100 Mbps | Cat5 | 100 m |
-| 1000Base-T | 1 Gbps | Cat5e/Cat6 | 100 m |
-| 10GBase-T | 10 Gbps | Cat6a/Cat7 | 100 m |
+Another example:
+
+```text
+1000Base-T
+```
+
+This means 1 Gbps Ethernet over twisted-pair copper.
+
+## Common Ethernet Standards
+You do not need to memorize every standard immediately.
+Start with the common ones.
+
+### 10Base-T
+Old Ethernet.
+Speed is 10 Mbps.
+Uses Cat3 cable.
+
+### 100Base-TX
+Fast Ethernet.
+Speed is 100 Mbps.
+Uses Cat5 cable.
+
+### 1000Base-T
+Gigabit Ethernet.
+Speed is 1 Gbps.
+Uses Cat5e or Cat6.
+
+### 10GBase-T
+10 Gigabit Ethernet.
+Speed is 10 Gbps.
+Uses Cat6a or better for full 100 m distance.
 
 ## Cable Categories
-| Cable | Max Speed | Common Use |
-|-------|-----------|------------|
-| Cat5 | 100 Mbps | Older networks |
-| Cat5e | 1 Gbps | Home and small office networks |
-| Cat6 | 10 Gbps at shorter distances | Office networks |
-| Cat6a | 10 Gbps | Enterprise networks |
-| Cat7 | 10+ Gbps | Data centers and shielded environments |
+Easy way to remember:
 
-## Ethernet Frame Structure
-| Field | Purpose |
-|-------|---------|
-| Destination MAC | Where to send the frame |
-| Source MAC | Who sent the frame |
-| Type / Length | Indicates payload type or length |
-| Data | Actual payload |
-| FCS | Error checking |
+- Cat5 = old.
+- Cat5e = good for 1 Gbps.
+- Cat6 = better, can support 10 Gbps at shorter distance.
+- Cat6a = 10 Gbps up to 100 m.
+
+## Ethernet Frame
+Ethernet sends data in frames.
+
+A frame contains:
+
+- Destination MAC address.
+- Source MAC address.
+- Type or length field.
+- Payload data.
+- FCS for error checking.
+
+Simple meaning:
+
+Ethernet frames are local network delivery envelopes.
+They use MAC addresses, not IP addresses, for local delivery.
 
 ## Hub vs Switch
-| Feature | Hub | Switch |
-|---------|-----|--------|
-| Layer | 1 | 2 |
-| Traffic | Repeats to all ports | Sends to target MAC |
-| Duplex | Half-duplex | Full-duplex |
-| Security | Low | Better |
-| Used Today | Rare | Standard |
+A hub repeats traffic to everyone.
+A switch sends traffic only where it needs to go.
+
+This is why switches are faster and more secure than hubs.
+
+Hub:
+
+- Layer 1.
+- Half-duplex.
+- Everyone sees traffic.
+- Rare today.
+
+Switch:
+
+- Layer 2.
+- Full-duplex.
+- Uses MAC address table.
+- Standard today.
+
+## CSMA/CD
+CSMA/CD means Carrier Sense Multiple Access with Collision Detection.
+
+It was used in old hub-based Ethernet.
+Devices checked if the line was free before sending.
+If two devices sent at the same time, a collision happened.
+
+Modern switched Ethernet mostly eliminated collisions.
 
 ## Offensive Angle
-| Concept | Example Attack |
-|---------|----------------|
-| Hub Network | Passive sniffing sees all traffic |
-| Switch Network | CAM overflow can force flooding behavior |
-| MAC Address | Spoofing to bypass simple controls |
-| Ethernet Frames | Frame injection |
+Attackers may target Ethernet behavior.
 
-### CAM Table Overflow Attack
+Examples:
+
+- MAC spoofing.
+- CAM table overflow.
+- VLAN hopping.
+- Rogue device connected to switch port.
+
+### CAM Table Overflow
+A switch stores MAC addresses in a CAM table.
+If an attacker floods the switch with many fake MAC addresses, the table may fill up.
+
+In some cases, the switch may start flooding traffic like a hub.
+
+Example tool:
+
 ```bash
-# Tool: macof (Kali Linux)
 macof -i eth0
-
-# Floods switch with fake MACs.
-# If the CAM table fills up, the switch may flood traffic.
 ```
 
 ## SOC Detection
-| Attack | Detection |
-|--------|-----------|
-| CAM Overflow | MAC flood alert in switch logs |
-| MAC Spoofing | Same IP using different MAC addresses |
-| Packet Sniffing | Promiscuous mode checks where available |
-| VLAN Hopping | Double-tagged frame detection |
+Watch for:
 
-## Interview Questions
-**Q: What is CSMA/CD?**
-Carrier Sense Multiple Access with Collision Detection.
-It was used in old hub-based Ethernet.
-Devices checked whether the line was free before sending.
-Modern switched Ethernet mostly eliminated collisions.
+- Many MAC addresses on one port.
+- Same IP with different MAC addresses.
+- Port security violations.
+- Double-tagged VLAN frames.
+- Unknown device connected to switch port.
 
-**Q: Why are switches better than hubs?**
-Switches send traffic only to the intended device.
+## Interview Ready Answers
+**Why are switches better than hubs?**
+
+Switches forward traffic only to the correct destination using MAC addresses.
 Hubs repeat traffic to everyone.
-Switches also support full-duplex communication and are more efficient.
+Switches are faster, more efficient, and more secure.
+
+**What is CSMA/CD?**
+
+CSMA/CD is an old Ethernet collision detection method used with hubs.
+Modern switches mostly removed the need for it.
+
+## Quick Revision
+- Ethernet = wired LAN technology.
+- Ethernet uses frames.
+- Frames use MAC addresses.
+- Hub = repeats to everyone.
+- Switch = forwards using MAC table.
+- 1000Base-T = Gigabit Ethernet.

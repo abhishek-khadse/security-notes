@@ -1,108 +1,180 @@
-# Lecture 02: OSI Layers 3, 4, 5 Deep Dive
+# Lecture 02: OSI Layers 3, 4, and 5
 Date: May 19, 2026
 Source: NetworkChuck Free CCNA
 
-## Layer 3: Network Layer
-- Handles logical addressing and routing.
-- Uses IP addresses to move packets between networks.
-- Routers and Layer 3 switches operate here.
-- Fragmentation can happen at this layer when packets are too large for the path MTU.
+## Why These Layers Matter
+Layers 3, 4, and 5 are very important for networking and security.
 
-### Devices
+These layers answer three big questions:
+
+- Layer 3: Which device or network should the packet go to?
+- Layer 4: Which service or port should receive it?
+- Layer 5: Which session or conversation does it belong to?
+
+## Layer 3 - Network Layer
+Layer 3 is the routing layer.
+It uses IP addresses to move packets between networks.
+
+Simple example:
+
+Your laptop wants to visit `google.com`.
+Your laptop cannot directly reach Google, so it sends traffic to the default gateway.
+The router then forwards the packet toward the destination network.
+
+Important Layer 3 ideas:
+
+- IP addressing
+- Routing
+- ICMP
+- Default gateway
+- Packet forwarding
+
+Common devices:
+
 - Router
 - Layer 3 switch
 
-### Protocols
+Common protocols:
+
 - IP
 - ICMP
 - IPsec
 
-### Offensive Angle
-- IP spoofing - faking the source IP address.
-- ICMP reconnaissance - ping sweeps to discover live hosts.
-- Traceroute - mapping the path between networks.
+### Security View
+Attackers use Layer 3 for discovery and traffic manipulation.
+
+Examples:
+
+- Ping sweep to find live hosts.
+- Traceroute to map network paths.
+- IP spoofing to fake the source address.
+- ICMP flood to overload a target.
+
+Useful commands:
 
 ```bash
-nmap -sn 192.168.1.0/24  # Ping sweep
-traceroute target.com     # Map network hops
+nmap -sn 192.168.1.0/24
+traceroute target.com
 ```
 
 ### SOC Detection
-- ICMP flood alerts.
-- Traffic from known malicious IPs.
-- Unusual source IPs or impossible routing patterns.
-- Repeated scanning across many hosts.
+Watch for:
 
----
+- Too much ICMP traffic.
+- Scans across many IP addresses.
+- Traffic from suspicious or impossible source IPs.
+- Communication with known malicious IPs.
 
-## Layer 4: Transport Layer
-- Provides end-to-end communication between hosts.
-- Uses port numbers to identify services.
-- Main protocols are TCP and UDP.
+## Layer 4 - Transport Layer
+Layer 4 is about ports and transport protocols.
 
-### TCP vs UDP
-| Feature | TCP | UDP |
-|---------|-----|-----|
-| Reliability | Reliable | Best effort |
-| Connection | Connection-oriented | Connectionless |
-| Speed | Slower | Faster |
-| Examples | HTTPS, SSH, RDP | DNS, VoIP, gaming |
+Simple meaning:
 
-### Offensive Angle
-- Port scanning - discovering exposed services.
-- SYN flood - exhausting server connection resources.
-- UDP scanning - finding services that do not use TCP.
+Layer 3 gets traffic to the correct machine.
+Layer 4 gets traffic to the correct service on that machine.
 
-```bash
-nmap -sS -p- target.com   # TCP SYN scan
-nmap -sU target.com       # UDP scan
-```
+Example:
 
-### SYN Flood Summary
-1. Attacker sends many SYN packets.
-2. Server replies with SYN-ACK.
-3. Attacker never completes the handshake.
-4. Server resources fill up and legitimate clients may be blocked.
+- `192.168.1.10:22` means SSH on that host.
+- `192.168.1.10:443` means HTTPS on that host.
 
-### SOC Detection
-- High SYN rate from one or many sources.
-- Sequential port hits.
-- Many half-open TCP connections.
-- Firewall, IDS/IPS, and load balancer rate-limit logs.
+## TCP vs UDP
+TCP is reliable.
+It creates a connection and checks that data arrives properly.
 
----
+UDP is faster.
+It sends data without building a full connection first.
 
-## Layer 5: Session Layer
-- Manages sessions between applications.
-- Handles session start, maintenance, and termination.
-- In real networks, session behavior often overlaps with application and authentication systems.
+Use TCP when reliability matters:
 
-### Examples
-- NetBIOS
-- RPC
-- PPTP
-- Application login sessions
+- HTTPS
+- SSH
+- RDP
 
-### Offensive Angle
-- Session hijacking - stealing or reusing a session token.
-- Cookie theft - using a valid web session cookie.
-- Authentication abuse - reusing stolen credentials or tokens.
-- Kerberos abuse - forged tickets in Active Directory environments.
+Use UDP when speed matters:
 
-### SOC Detection
-- Impossible travel alerts.
-- Same user active from multiple unusual IPs.
-- Multiple authentication failures followed by success.
-- Session token reuse from new geography or device.
+- DNS
+- VoIP
+- Online gaming
 
-## Interview Questions
-**Q: Explain the TCP 3-way handshake.**
+## TCP 3-Way Handshake
+TCP starts with a 3-step process:
+
 1. Client sends SYN.
-2. Server responds with SYN-ACK.
+2. Server replies SYN-ACK.
 3. Client sends ACK.
 
-After this, the connection is established. A SYN flood abuses this process by starting many connections and never finishing them.
+After this, the connection is established.
 
-**Q: What is the difference between TCP and UDP?**
-TCP is reliable, connection-oriented, and slower.
-UDP is faster, connectionless, and does not guarantee delivery.
+### SYN Flood
+A SYN flood abuses this handshake.
+
+The attacker sends many SYN packets but never completes the handshake.
+The server keeps waiting, resources fill up, and real users may be blocked.
+
+### SOC Detection
+Watch for:
+
+- Many SYN packets.
+- Many half-open connections.
+- Sequential port hits.
+- One source scanning many ports.
+
+Useful commands:
+
+```bash
+nmap -sS -p- target.com
+nmap -sU target.com
+```
+
+## Layer 5 - Session Layer
+Layer 5 manages sessions.
+
+Simple meaning:
+
+It keeps track of conversations between applications.
+In real systems, session behavior often overlaps with authentication and application logic.
+
+Examples:
+
+- Login sessions.
+- RPC sessions.
+- NetBIOS sessions.
+- VPN sessions.
+
+### Security View
+Attackers care about sessions because sessions prove that a user is already authenticated.
+
+Examples:
+
+- Stealing cookies.
+- Reusing session tokens.
+- Hijacking an active login.
+- Abusing Kerberos tickets in Active Directory.
+
+### SOC Detection
+Watch for:
+
+- Same user logged in from two far locations.
+- Session token used from a new device.
+- Multiple failures followed by success.
+- Login activity outside normal time.
+
+## Interview Ready Answers
+**What is the TCP 3-way handshake?**
+
+TCP starts a connection using SYN, SYN-ACK, and ACK.
+This confirms both sides are ready to communicate.
+
+**What is the difference between TCP and UDP?**
+
+TCP is reliable and connection-oriented.
+UDP is faster and connectionless, but delivery is not guaranteed.
+
+## Quick Revision
+- Layer 3 = IP address and routing.
+- Layer 4 = TCP/UDP and ports.
+- Layer 5 = sessions and conversations.
+- IP finds the device.
+- Port finds the service.
+- Session tracks the conversation.

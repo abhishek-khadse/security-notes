@@ -2,79 +2,163 @@
 Date: May 19, 2026
 Source: NetworkChuck Free CCNA
 
-## Types of Copper Cables
-| Type | Shielding | Use | Cost |
-|------|-----------|-----|------|
-| UTP | None | Standard LAN cabling | Low |
-| STP | Shielded | High-interference areas | Medium |
-| Coaxial | Shielded | TV, CCTV, older networks | Medium |
+## Big Idea
+Copper cabling carries data using electrical signals.
+It is common in homes, offices, and LAN environments.
+
+Most Ethernet cables you see with RJ45 connectors are copper twisted-pair cables.
+
+## UTP
+UTP means Unshielded Twisted Pair.
+
+Simple meaning:
+
+The wires are twisted together, but there is no extra shielding.
+
+Good for:
+
+- Homes.
+- Offices.
+- Normal LAN cabling.
+
+Why common:
+
+- Cheap.
+- Easy to install.
+- Good enough for most environments.
+
+## STP
+STP means Shielded Twisted Pair.
+
+Simple meaning:
+
+It has shielding to reduce electromagnetic interference.
+
+Good for:
+
+- Industrial areas.
+- High-interference environments.
+- Places near heavy electrical equipment.
+
+## Coaxial Cable
+Coaxial cable has a central conductor and shielding around it.
+
+Common uses:
+
+- TV.
+- CCTV.
+- Cable internet.
+- Older networks.
 
 ## Cable Categories
-| Cable | Speed | Common Use |
-|-------|-------|------------|
-| Cat3 | 10 Mbps | Old phone and legacy Ethernet |
-| Cat5 | 100 Mbps | Older networks |
-| Cat5e | 1 Gbps | Home and small office networks |
-| Cat6 | 10 Gbps at shorter distances | Modern office networks |
-| Cat6a | 10 Gbps | Enterprise networks |
-| Cat7 | 10+ Gbps | Shielded data center environments |
+Think of categories as cable performance levels.
 
-## Wiring Standards
-### T568B (Common)
-| Pin | Color |
-|-----|-------|
-| 1 | White-Orange |
-| 2 | Orange |
-| 3 | White-Green |
-| 4 | Blue |
-| 5 | White-Blue |
-| 6 | Green |
-| 7 | White-Brown |
-| 8 | Brown |
+Important ones:
 
-## Cable Types by Use
-| Cable | Connects | Example |
-|-------|----------|---------|
-| Straight-through | Different device types | PC -> Switch |
-| Crossover | Same device types | PC -> PC |
+- Cat3: old, around 10 Mbps.
+- Cat5: older Ethernet, around 100 Mbps.
+- Cat5e: common for 1 Gbps.
+- Cat6: better, supports 10 Gbps at shorter distance.
+- Cat6a: supports 10 Gbps up to 100 m.
 
-Modern devices often support auto-MDI/MDIX, so crossover cables are less commonly needed today.
+Easy memory:
 
-## Transmission Modes
-| Mode | Direction |
-|------|-----------|
-| Simplex | One-way only |
-| Half Duplex | Both ways, one at a time |
-| Full Duplex | Both ways simultaneously |
+Higher category usually means better speed and performance.
+
+## Maximum Copper Ethernet Distance
+The common Ethernet limit for copper is 100 meters.
+
+If distance is more than 100 meters, use:
+
+- Fiber.
+- Another switch.
+- Proper network extension design.
+
+## T568B Wiring
+T568B is a common wiring standard.
+
+Pin order:
+
+1. White-Orange
+2. Orange
+3. White-Green
+4. Blue
+5. White-Blue
+6. Green
+7. White-Brown
+8. Brown
+
+You do not need to memorize this perfectly at first, but recognize that wiring order matters.
+
+## Straight-Through vs Crossover
+Straight-through cable connects different device types.
+
+Example:
+
+- PC to switch.
+
+Crossover cable connects same device types.
+
+Example:
+
+- PC to PC.
+- Switch to switch.
+
+Modern devices usually support auto-MDI/MDIX, so crossover cables are less needed today.
+
+## Duplex
+Simplex:
+
+- One-way only.
+
+Half-duplex:
+
+- Both directions, but one at a time.
+
+Full-duplex:
+
+- Both directions at the same time.
+
+Modern switched Ethernet usually uses full-duplex.
 
 ## Offensive Angle
-| Attack | Description |
-|--------|-------------|
-| Physical Tap | Device reads electrical signal |
-| Crosstalk Exploitation | Attempt to observe adjacent cable signals |
-| Patch Panel Access | Plug in rogue device |
-| RJ45 Port Abuse | Connect unauthorized device to network |
+Physical access is dangerous.
 
-### Physical Attack Scenario
-1. Attacker gets physical access to an office.
-2. Attacker finds an unlocked patch panel.
-3. Attacker plugs in a small device or network tap.
-4. The device captures traffic or provides remote access.
+Possible attacks:
+
+- Plugging a rogue device into an RJ45 port.
+- Accessing an unlocked patch panel.
+- Installing a physical network tap.
+- Connecting a small device for remote access.
+
+Example scenario:
+
+An attacker enters an office, finds an unused network port, connects a small device, and later accesses the internal network remotely.
 
 ## SOC Detection
-| Attack | Detection |
-|--------|-----------|
-| Rogue Device | New unknown MAC alert |
-| Physical Tap | Signal quality degradation |
-| Unauthorized Port | Port security violation |
-| Patch Panel Abuse | Physical access control logs |
+Watch for:
 
-## Interview Questions
-**Q: What is the maximum Ethernet cable length for copper?**
-The common maximum distance for copper Ethernet is 100 meters.
+- New unknown MAC address.
+- Port security violation.
+- Link-up event on unused port.
+- Device connected outside business hours.
+- Signal quality degradation.
+
+## Interview Ready Answers
+**What is the maximum copper Ethernet distance?**
+
+The common maximum distance is 100 meters.
 Beyond that, signal quality degrades.
-Fiber is used for longer distances.
 
-**Q: What is the difference between UTP and STP?**
-UTP has no shielding and is cheap and common.
-STP has shielding, which helps protect against electromagnetic interference.
+**What is the difference between UTP and STP?**
+
+UTP has no shielding and is common in normal offices.
+STP has shielding and is used where electromagnetic interference is a concern.
+
+## Quick Revision
+- Copper uses electrical signals.
+- UTP = common and cheap.
+- STP = shielded.
+- Cat5e = 1 Gbps.
+- Cat6a = 10 Gbps up to 100 m.
+- Copper Ethernet distance = 100 m.
